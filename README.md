@@ -1,3 +1,7 @@
+## **1.1.0更新**
+在之前的**1.0.x**版本中，由于考虑不周，没有提取HTML文档中未用`/start:xx/`和`/end/`包裹住的css和js资源，导致在打包好的文件夹內沒有了这部分资源的引用，目前该bug已紧急修复！\
+这次版本更新后，用户可以得到HTML文件中引用的所有css和js文件了（包括HTML本身）。\
+用户根据自身需求对不同资源进行加工处理即可！
 # gulp-html-assets-extract
 
 `gulp-html-assets-extract` 是构建于gulp之上的一款思想超前的插件。它的工作方式类似于Webpack和Rollup的 `Tree Shaking` —— 以HTML文件作为输入，提取出有用的资源，以做进一步处理
@@ -20,7 +24,7 @@ npm install gulp-html-assets-extract -D
 **所有以传统方式进行前端开发的场景（可以是Hybrid App，Webview 或 Web App等等）**
 
 ## gulp-html-assets-extract有什么独特之处?
-&emsp;&emsp;gulp-html-assets-extract是以HTML文件作为输入的。它会寻找文件中做了标记的资源引用，将标记在一起的资源引用作为一个文件单位提取出来，`pipe` 给其它插件做进一步处理。（目前该插件仅支持html,css和js资源的提取，若读者有其它需求，可联系作者对功能进行扩展）然后在HTML文件中给以简单的注释，以让gulp-html-assets-extract能正确提取你感兴趣的那部分文件做进一步处理。
+&emsp;&emsp;gulp-html-assets-extract以HTML文件作为输入！它寻找文件中做了标记的资源引用，将标记的引用合并成一个文件，未做标记的资源，作为独立的文件，`pipe` 给其它插件做进一步处理
 
 
 ## gulp-html-assets-extract的工作方式?
@@ -124,7 +128,8 @@ const jsFilter = filter("**/*.js", {restore:true})
 const cssFilter = filter("**/*.css", {restore:true})
 const htmlFilter = filter("**/*.html", {restore:true})
   ```
-以上三句代码通过gulp-filter来创建了三种不同的过滤器，分别可以过滤得到HTML，CSS和JS文件。其中，`{restore:true}`这个选项是必加的，不然无法进行之后的`htmlFilter.restore`或`htmlFilter.restore`等操作。
+以上三句代码通过gulp-filter来创建了三种不同的过滤器，分别可以过滤得到HTML，CSS和JS文件。其中，`{restore:true}`这个选项是必加的，不然无法进行之后的`htmlFilter.restore`或`htmlFilter.restore`等操作。\
+注意，filter的第一个参数用户可根据自身需求自定义，它是接受数组形式的参数的（具体用户可参考gulp-filter的文档说明）。升级到1.1.0之后，这个参数用户需要适当调整下。因为在1.1.x版本中插件会提取原来HTML文档中未做标记的资源引用。如果用户不想对这些资源进行压缩等处理，应在过滤器中将其过滤掉，最后直接`dest`到目标目录中。
 ```js
 gulp.src("./src/**/*.html", {base: './src'})
 ```
@@ -156,7 +161,7 @@ gulp.src("./src/**/*.html", {base: './src'})
 
 ## 反馈
 在插件使用过程中如遇到问题可向作者反馈(939774876@qq.com)\
-如果觉得好用的话可向身边的人推广或GitHub点个星
+如果觉得好用的话可向身边的人推广或[给个星](https://github.com/FranklyCai/gulp-html-assets-extract)
 
 ## 许可证
 [MIT](https://choosealicense.com/licenses/mit/)
