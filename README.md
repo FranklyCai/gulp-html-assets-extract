@@ -1,3 +1,5 @@
+## **1.1.1更新**
+更新Demo案例（包括如何使用gulp-filter过滤未被标记的文件，让它们直接复制到目标目录中；以及搭配lazypipe和gulp.parallel来使gulp任务的执行速度大幅提升！！）
 ## **1.1.0更新**
 在之前的**1.0.x**版本中，由于考虑不周，没有提取HTML文档中未用`/start:xx/`和`/end/`包裹住的css和js资源，导致在打包好的文件夹內沒有了这部分资源的引用，目前该bug已紧急修复！\
 这次版本更新后，用户可以得到HTML文件中引用的所有css和js文件了（包括HTML本身）。\
@@ -16,29 +18,28 @@ npm install gulp-html-assets-extract -D
 
 ## gulp-html-assets-extract是怎样炼成的?
 机缘巧合之下，我接手了一个项目，需要配合安卓和iOS端开发Webview页面。该项目采用原生html+css+js，没有使用任何前端框架，也没有打包工具。\
-一开始我打算采用webpack进行打包，但webpack与传统开发模式并不契合（毕竟webpack不是为了这个目的而诞生的），配置起来较困难，于是我将目光投向了gulp。\
-一开始还算顺利，但慢慢地一个问题被暴露了出来 —— 以往我们借助于三大框架及webpack，我们可以打包我们项目需要的资源(Tree Shaking)，以及对JS和CSS文件做合并压缩处理。但当我们使用html+gulp这种技术栈的时候，发现这点很难实现。为什么呢？原因很简单，gulp的功能依托于插件，而在浩瀚如林的gulp插件中，并没有能实现类似于webpack这种打包机制的插件。\
-没办法，只能自己开发一个了。
-
-## gulp-html-assets-extract的使用场景?
-**所有以传统方式进行前端开发的场景（可以是Hybrid App，Webview 或 Web App等等）**
+一开始我打算采用webpack进行打包，但webpack与传统开发模式并不契合，配置起来也较困难，我便将目光投向了gulp。\
+一开始还算顺利，但慢慢地一个问题暴露了出来 —— 以前我们借助三大框架及webpack，可以打包我们项目真正需要的资源(Tree Shaking)，以及对JS和CSS文件做合并压缩处理。但当我们使用html+gulp的时候，这点却很难实现。为什么呢？原因很简单，gulp的功能依托于插件，而在浩瀚如林的gulp插件中，并没有能实现类似于webpack这种打包机制的插件，于是我便动手自己开发了一个。\
 
 ## gulp-html-assets-extract有什么独特之处?
-&emsp;&emsp;gulp-html-assets-extract以HTML文件作为输入！它寻找文件中做了标记的资源引用，将标记的引用合并成一个文件，未做标记的资源，作为独立的文件，`pipe` 给其它插件做进一步处理
+&emsp;&emsp;gulp-html-assets-extract以HTML文件作为输入！它寻找文件中做了标记的资源引用，将标记的引用合并成一个文件，未做标记的资源，作为独立的文件，pipe 给下面的插件做进一步处理
 
+## gulp-html-assets-extract的使用场景?
+所有以HTML而非JS文件作为入口的开发场景(其实就是不借助三大框架的传统开发模式)
 
 ## gulp-html-assets-extract的工作方式?
 &emsp;&emsp;上文提到gulp-html-assets-extract会在html文件中寻找**标记**。那什么是标记呢？其实这是本插件事先定义好的HTML文档特殊注释（在w3c规范的HTML注释`<!--  -->`中间加上`/start:xxx/`或`/end/`，如`<!-- /start:demo.js/ -->`）gulp-html-assets-extract 会从注释包裹的内容中提取资源路径，根据路径将文件内容从磁盘读出来后合成一个文件 `pipe` 下去。\
 **Q：** 为什么要用注释的方式来提取资源呢？\
 **A：** 原因有以下几点：\
-① HTML中可能引用了第三方的js和css，这类型的资源可能已经被做了压缩等处理，如果再把它们拿出来进行二次加工，会导致处理时间的加长及潜在的错误。读者不要将该类型资源包含在注释中即可\
+① HTML中可能引用了第三方的js和css，这类型的资源可能做好了优化处理。如果再把它们拿出来进行二次加工，将会导致加工时间的增长以及潜在的错误。怎样规避这类问题呢？只要将它们置于标记外即可\
 ② 如果一个注释里包含了多个css或js资源，插件是会将它们从磁盘中读取出来并合并为一个文件的。这时候就面对一个问题了，合并后的文件它叫什么，放于什么位置？为了让插件更灵活，插件采用这种方式将选择权交给了读者，让读者充分DIY（`<!-- /start:xxx/ -->`中的`xxx`就包含了合并后生成文件的位置和名称。如`<!-- /start:path/to/folder/foo.js/ -->`就会生成`foo.js`文件，放于`path`目录下的`to`文件夹下的`folder`文件夹内）。\
-③ 增加插件的灵活性。读者可以自行决定哪些资源需要作为一组进行合并，哪些作为另一组进行合并。
+③ 增加页面的可重塑性 —— 用户可以自行决定哪些资源需要作为一组进行合并，哪些作为另一组进行合并
 
-## 插件有哪些亮点
-- **简单** - 只需一步注释就可达到你想要的功能
-- **灵活** - 用户可自行决定需要合并哪些文件以及合并后的文件名称是什么，文件存放路径是哪
-- **高效** - 高性能正则匹配
+## gulp-html-assets-extract的亮点
+说了这么多，gulp-html-assets-extract 到底有哪些优点呢？
+- **简单** - 只需注释就可实现一站式功能
+- **灵活** - 用户可在页面内充分DIY
+- **高效** - 高性能的正则匹配
 - **节约** - 以HTML为导向，只专注有用资源，节约时间，节省资源
 
 ## Demo
@@ -75,31 +76,48 @@ const htmlmin = require('gulp-htmlmin');
 const uglify = require('gulp-uglify');
 const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('gulp-autoprefixer');
+const lazypipe = require('lazypipe')
 
 gulp.task('html-assets-extract',function(){
-  const jsFilter = filter("**/*.js", {restore:true})
-  const cssFilter = filter("**/*.css", {restore:true})
-  const htmlFilter = filter("**/*.html", {restore:true})
-  return gulp.src("./src/**/*.html", {base: './src'})
-  .pipe(extract())
-  .pipe(htmlFilter)
-  .pipe(htmlmin(htmlMinOptions))
-  .pipe(gulp.dest(devPath.buildPath))
-  .pipe(htmlFilter.restore)
-  .pipe(jsFilter)
-  .pipe(uglify())
-  .pipe(gulp.dest(devPath.buildPath))
-  .pipe(jsFilter.restore)
-  .pipe(cssFilter)
-  .pipe(autoprefixer({
-    overrideBrowserslist: ['Android 4.1', 'iOS 7.1', 'Chrome > 31', 'ff > 31', 'ie >= 8'],
-    grid: true,
-  }))
-  .pipe(cleanCSS())
-  .pipe(gulp.dest(devPath.buildPath))
+  // 感叹号开头，过滤掉文件路径中包含lib文件夹的所有js文件
+  const jsFilter = filter(['**/*.js', '!**/lib/**'])
+  // 感叹号开头，过滤掉文件路径中包含lib文件夹的所有css文件
+  const cssFilter = filter(['**/*.css', '!**/lib/**'])
+  const htmlFilter = filter("**/*.html")
+  const readSrc = () => gulp.src("./src/**/*.html",{base: 'src'});
+  // 初始化一个lazypipe
+  const assetsPipe = lazypipe().pipe(readSrc).pipe(htmlAssets)();
+  // html文件处理函数，函数体根据自身需求定义
+  function html(cb){
+    assetsPipe.pipe(htmlFilter).pipe(htmlmin(htmlMinOptions)).pipe(gulp.dest(devPath.buildPath));
+    cb();
+  }
+  // js文件处理函数，函数体根据自身需求定义
+  function js(cb){
+    assetsPipe.pipe(jsFilter).pipe(babel({presets: ['@babel/env']}))
+    .pipe(uglify())
+    .pipe(gulp.dest(devPath.buildPath))
+    cb()
+  }
+  // css文件处理函数，函数体根据自身需求定义
+  function css(cb){
+    assetsPipe.pipe(cssFilter).pipe(cleanCSS())
+    .pipe(autoprefixer({
+      overrideBrowserslist: ['Android 4.1', 'iOS 7.1', 'Chrome > 31', 'ff > 31', 'ie >= 8'],
+      grid: true,
+    }))
+    .pipe(gulp.dest(devPath.buildPath))
+    cb();
+  }
+  // 定义三个gulp任务，因为gulp.parallel的参数必须是gulp任务
+  gulp.task('js',js)
+  gulp.task('css',css)
+  gulp.task('html',html)
+  // 并列执行html,js和css三个任务，执行时间大幅缩短
+  gulp.parallel('html','js','css')(cb)
 })
 ```
-第一个是html文件，第二个是`gulpfile.js`配置文件
+以上第一个是html文件，第二个是`gulpfile.js`配置文件
 
 任务执行成功后，html会变成
 ```html
@@ -124,33 +142,19 @@ gulp.task('html-assets-extract',function(){
 **guilefile.js注释：**
 为防止初学者不懂以上配置什么意思，这里特给出注释
 ```js
-const jsFilter = filter("**/*.js", {restore:true})
-const cssFilter = filter("**/*.css", {restore:true})
-const htmlFilter = filter("**/*.html", {restore:true})
+const jsFilter = filter(['**/*.js', '!**/lib/**'])
+const cssFilter = filter(['**/*.css', '!**/lib/**'])
+const htmlFilter = filter("**/*.html")
   ```
-以上三句代码通过gulp-filter来创建了三种不同的过滤器，分别可以过滤得到HTML，CSS和JS文件。其中，`{restore:true}`这个选项是必加的，不然无法进行之后的`htmlFilter.restore`或`htmlFilter.restore`等操作。\
-注意，filter的第一个参数用户可根据自身需求自定义，它是接受数组形式的参数的（具体用户可参考gulp-filter的文档说明）。升级到1.1.0之后，这个参数用户需要适当调整下。因为在1.1.x版本中插件会提取原来HTML文档中未做标记的资源引用。如果用户不想对这些资源进行压缩等处理，应在过滤器中将其过滤掉，最后直接`dest`到目标目录中。
+以上三句代码通过gulp-filter来创建了三种不同的过滤器，分别可以过滤得到HTML文件，文件路径中不包括lib文件夹的CSS文件以及文件路径中不包括lib文件夹的JS文件。
 ```js
 gulp.src("./src/**/*.html", {base: './src'})
 ```
-`gulp.src` 是 gulp读取文件的方式，没什么好说的。**需要注意的是我们最好指定`base`选项。** 为什么呢？因为当我们处理完文件调用`gulp.dest`将文件写入磁盘中时，gulp会根据这个`base`指定的目录作为相对路径来创建对应的目录结构。什么意思呢？假如你在html文件中这里写注释：`/start:abc/bcd/foo.js/`，那么当gulp将要使用`gulp.dest`将文件写入磁盘内时，文件的路径就会是`{base}/abc/bcd/foo.js`。
+`gulp.src` 是 gulp读取文件的方式。**需要注意的是我们应该指定`base`选项。** 否则文件路径很可能出错
+```js
+gulp.parallel('html','js','css')(cb)
 ```
-.pipe(htmlFilter)
-.pipe(jsFilter)
-.pipe(cssFilter)
-```
-调用后会分别得到html、js 和 css子集
-```
-.pipe(htmlFilter.restore)
-.pipe(jsFilter.restore)
-```
-恢复被过滤器过滤掉的文件
-```
-.pipe(htmlmin(htmlMinOptions))
-.pipe(uglify())
-.pipe(cleanCSS())
-```
-对html,js,css文件做相应处理（注意：这里只做演示，需要如何处理使用者可自行调整）
+在`gulp.task`和`gulp.parallel`的回调函数别忘记`cb`的调用（具体参考上例）
 
 ## 注意事项
 1. 插件不会对远端资源做处理，如以 `http://` 或 `https://` 开头的资源类型，因为代码本身是通过调用`fs.readFileSync`来读取文件的（那么当碰到这类资源时，插件会在控制台给出提示，告诉你跳过了这个文件）
