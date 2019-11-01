@@ -109,12 +109,8 @@ gulp.task('html-assets-extract',function(){
     .pipe(gulp.dest(devPath.buildPath))
     cb();
   }
-  // 定义三个gulp任务，因为gulp.parallel的参数必须是gulp任务
-  gulp.task('js',js)
-  gulp.task('css',css)
-  gulp.task('html',html)
   // 并列执行html,js和css三个任务，执行时间大幅缩短
-  gulp.parallel('html','js','css')(cb)
+  gulp.parallel(html,js,css)(cb)
 })
 ```
 以上第一个是html文件，第二个是`gulpfile.js`配置文件
@@ -152,15 +148,13 @@ gulp.src("./src/**/*.html", {base: './src'})
 ```
 `gulp.src` 是 gulp读取文件的方式。**需要注意的是我们应该指定`base`选项。** 否则文件路径很可能出错
 ```js
-gulp.parallel('html','js','css')(cb)
+gulp.parallel(html,js,css)(cb)
 ```
 在`gulp.task`和`gulp.parallel`的回调函数别忘记`cb`的调用（具体参考上例）
 
 ## 注意事项
-1. 插件不会对远端资源做处理，如以 `http://` 或 `https://` 开头的资源类型，因为代码本身是通过调用`fs.readFileSync`来读取文件的（那么当碰到这类资源时，插件会在控制台给出提示，告诉你跳过了这个文件）
-2. 当`/start:xxx/`和`/end/`标签中出现了嵌套的`/start:xxx/`标签时，插件会给出提示并跳过该html文件（嵌套这种情况在逻辑上亦不合理，使用者应根据控制台提示修改嵌套注释）
-3. 注释标签前后各有一个空格，请严格遵守`<!--(这里有一个空格)/start:文件名/(这里有一个空格)-->`
-4. 理解`base`这个概念很重要，这样当调用`gulp.dest`的时候文件才会按照希望的那种目录结构输出到dest目录中。如果还不是很清楚的话，可以参考node和gulp的官方文档（这里先举一个简单的例子：当你书写诸如`<link rel="stylesheet" href="/css/style1.css" />`和`<script src="/js/test.js"></script>`时，你的 **`/`** 指的是什么目录，那么`base`就是什么目录）
+1. 注释标签前后各有一个空格，请严格遵守`<!--(这里有一个空格)/start:文件名/(这里有一个空格)-->`、`<!--(这里有一个空格)/end/(这里有一个空格)-->`
+2. 理解`base`这个概念很重要，如果还不是很清楚的话，可以参考node和gulp的官方文档（这里先举一个简单的例子：当你书写诸如`<link rel="stylesheet" href="/css/style1.css" />`和`<script src="/js/test.js"></script>`时，你的 **`/`** 指的是什么目录，那么`base`就是什么目录）
 
 
 ## 反馈
