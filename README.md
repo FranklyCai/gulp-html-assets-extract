@@ -1,12 +1,10 @@
-## **1.1.1更新**
-更新Demo案例（包括如何使用gulp-filter过滤未被标记的文件，让它们直接复制到目标目录中；以及搭配lazypipe和gulp.parallel来使gulp任务的执行速度大幅提升！！）
-## **1.1.0更新**
-在之前的**1.0.x**版本中，由于考虑不周，没有提取HTML文档中未用`/start:xx/`和`/end/`包裹住的css和js资源，导致在打包好的文件夹內沒有了这部分资源的引用，目前该bug已紧急修复！\
-这次版本更新后，用户可以得到HTML文件中引用的所有css和js文件了（包括HTML本身）。\
-用户根据自身需求对不同资源进行加工处理即可！
 # gulp-html-assets-extract
 
-`gulp-html-assets-extract` 是构建于gulp之上的一款思想超前的插件。它的工作方式类似于Webpack和Rollup的 `Tree Shaking` —— 以HTML文件作为输入，提取出有用的资源，以做进一步处理
+`gulp-html-assets-extract` 是构建于gulp之上的一款思想超前的插件。它的工作方式类似于webpack和rollup的 **tree shaking** —— 以HTML文件作为输入，提取出文档中有用的资源，pipe下去做进一步处理
+
+## 重要更新日志
+- ## 1.1.1 -更新Demo案例（演示如何使用gulp-filter过滤未被标记文件，以及如何搭配lazypipe和gulp.parallel使gulp执行速度大幅提升！！）
+- ## 1.1.0 -在之前的1.0.x版本中，插件没有提取未用`/start:xx/`和`/end/`包裹住的资源，该逻辑目前已修正。在这次版本更新后，使用者可以正确得到文件中引用的所有css和js资源了！
 
 ## 安装
 
@@ -19,7 +17,7 @@ npm install gulp-html-assets-extract -D
 ## gulp-html-assets-extract是怎样炼成的?
 机缘巧合之下，我接手了一个项目，需要配合安卓和iOS端开发Webview页面。该项目采用原生html+css+js，没有使用任何前端框架，也没有打包工具。\
 一开始我打算采用webpack进行打包，但webpack与传统开发模式并不契合，配置起来也较困难，我便将目光投向了gulp。\
-一开始还算顺利，但慢慢地一个问题暴露了出来 —— 以前我们借助三大框架及webpack，可以打包我们项目真正需要的资源(Tree Shaking)，以及对JS和CSS文件做合并压缩处理。但当我们使用html+gulp的时候，这点却很难实现。为什么呢？原因很简单，gulp的功能依托于插件，而在浩瀚如林的gulp插件中，并没有能实现类似于webpack这种打包机制的插件，于是我便动手自己开发了一个。\
+一开始还算顺利，但慢慢地一个问题暴露了出来 —— 以前我们借助三大框架及webpack，可以打包我们项目真正需要的资源(Tree Shaking)，以及对JS和CSS文件做合并压缩处理。但当我们使用html+gulp的时候，这点却很难实现。为什么呢？原因很简单，gulp的功能依托于插件，而在浩瀚如林的gulp插件中，并没有能实现类似于webpack这种打包机制的插件，于是我便动手自己开发了一个。
 
 ## gulp-html-assets-extract有什么独特之处?
 &emsp;&emsp;gulp-html-assets-extract以HTML文件作为输入！它寻找文件中做了标记的资源引用，将标记的引用合并成一个文件，未做标记的资源，作为独立的文件，pipe 给下面的插件做进一步处理
@@ -35,8 +33,8 @@ npm install gulp-html-assets-extract -D
 ② 如果一个注释里包含了多个css或js资源，插件是会将它们从磁盘中读取出来并合并为一个文件的。这时候就面对一个问题了，合并后的文件它叫什么，放于什么位置？为了让插件更灵活，插件采用这种方式将选择权交给了读者，让读者充分DIY（`<!-- /start:xxx/ -->`中的`xxx`就包含了合并后生成文件的位置和名称。如`<!-- /start:path/to/folder/foo.js/ -->`就会生成`foo.js`文件，放于`path`目录下的`to`文件夹下的`folder`文件夹内）。\
 ③ 增加页面的可重塑性 —— 用户可以自行决定哪些资源需要作为一组进行合并，哪些作为另一组进行合并
 
-## gulp-html-assets-extract的亮点
-说了这么多，gulp-html-assets-extract 到底有哪些优点呢？
+## gulp-html-assets-extract的优势
+说了这么多，gulp-html-assets-extract 到底有哪些优点呢
 - **简单** - 只需注释就可实现一站式功能
 - **灵活** - 用户可在页面内充分DIY
 - **高效** - 高性能的正则匹配
