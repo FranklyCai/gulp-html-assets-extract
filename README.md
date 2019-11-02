@@ -77,7 +77,7 @@ const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('gulp-autoprefixer');
 const lazypipe = require('lazypipe')
 
-gulp.task('html-assets-extract',function(){
+gulp.task('html-assets-extract',function(cb){
   // 感叹号开头，过滤掉文件路径中包含lib文件夹的所有js文件
   const jsFilter = filter(['**/*.js', '!**/lib/**'])
   // 感叹号开头，过滤掉文件路径中包含lib文件夹的所有css文件
