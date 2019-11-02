@@ -68,7 +68,7 @@ npm install gulp-html-assets-extract -D
 </html>
 ```
 ```js
-const extract = require('gulp-html-assets-extract'),
+const extract = require('gulp-html-assets-extract');
 const filter = require('gulp-filter');
 const htmlmin = require('gulp-htmlmin');
 const uglify = require('gulp-uglify');
@@ -84,7 +84,7 @@ gulp.task('html-assets-extract',function(){
   const htmlFilter = filter("**/*.html")
   const readSrc = () => gulp.src("./src/**/*.html",{base: 'src'});
   // 初始化一个lazypipe
-  const assetsPipe = lazypipe().pipe(readSrc).pipe(htmlAssets)();
+  const assetsPipe = lazypipe().pipe(readSrc).pipe(extract)();
   // html文件处理函数，函数体根据自身需求定义
   function html(cb){
     assetsPipe.pipe(htmlFilter).pipe(htmlmin(htmlMinOptions)).pipe(gulp.dest(devPath.buildPath));
