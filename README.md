@@ -3,6 +3,7 @@
 `gulp-html-assets-extract` 是构建于gulp之上的一款思想超前的插件。它的工作方式类似于webpack和rollup的 **tree shaking** —— 以HTML文件作为输入，提取出文档中有用的资源，pipe下去做进一步处理
 
 ## 重要更新日志
+- **1.1.5 -修正Demo中一个拼写错误**
 - **1.1.1 -更新Demo案例（演示如何使用gulp-filter过滤未被标记文件，以及如何搭配lazypipe和gulp.parallel使gulp执行速度大幅提升！！）**
 - **1.1.0 -在之前的1.0.x版本中，插件没有提取未用`/start:xx/`和`/end/`包裹住的资源，该逻辑目前已修正。在这次版本更新后，使用者可以正确得到文件中引用的所有css和js资源了！**
 
